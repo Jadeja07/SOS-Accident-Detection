@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SOS Guard | History</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="navbar.css">
+
+<style>
+:root{
+  --accent:#00e5ff;--bg1:#020617;--bg2:#0f172a;
+  --danger:#ef4444;--safe:#22c55e;--warn:#facc15;
+  --muted:#94a3b8;--card:#020617;--border:#1e293b;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{background:linear-gradient(135deg,var(--bg1),var(--bg2));color:#fff;padding-top:90px}
+.container{max-width:1200px;margin:auto;padding:40px 8%}
+.filters{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}
+.filter-btn{padding:8px 16px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
+.filter-btn.active,.filter-btn:hover{background:var(--accent);color:#000}
+.clear-btn{margin-left:auto;background:#ef4444;color:#fff;border:none;padding:8px 16px;border-radius:20px;cursor:pointer}
+
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden}
+th,td{padding:12px 15px;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-size:.8rem;text-transform:uppercase}
+
+.tag{padding:4px 10px;border-radius:20px;font-size:.7rem;font-weight:600}
+.tag-accident{background:rgba(239,68,68,.15);color:var(--danger)}
+.tag-offline{background:rgba(250,204,21,.15);color:var(--warn)}
+.tag-online{background:rgba(34,197,94,.15);color:var(--safe)}
+.tag-stop{background:rgba(34,197,94,.15);color:var(--safe)}
+</style>
+</head>
+
+<body>
+
+  <!-- Common Navbar -->
+  <div id="navbar"></div>
+  <script>
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar").innerHTML = html;
+      });
+  </script>
+
+  <section class="container">
+    <h2 style="color:var(--accent)">History Log</h2>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="accident">Accident</button>
+      <button class="filter-btn" data-filter="online">Device Online</button>
+      <button class="filter-btn" data-filter="offline">Device Offline</button>
+      <button class="filter-btn" data-filter="stop">Vehicle Stopped</button>
+      <button class="clear-btn" onclick="clearHistory()">Clear History</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr><th>Time</th><th>Location</th><th>Speed</th><th>Event</th><th>Status</th></tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </section>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+/* FIREBASE INIT */
+const firebaseConfig = {
+  apiKey:"AIzaSyB_dQqxZ0K943Z9bOoUYa89hXDrdNI3B5I",
+  authDomain:"sos-iot-bf587.firebaseapp.com",
+  databaseURL:"https://sos-iot-bf587-default-rtdb.firebaseio.com",
+  projectId:"sos-iot-bf587"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const db = firebase.database();
+const auth = firebase.auth();
+
+/* NAVBAR LOAD + PROFILE PHOTO (same as dashboard) */
+fetch("navbar.html")
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById("navbar").innerHTML = html;
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return;
+
+      const email = user.email;
+      const key = email.replace(/\./g, "_");
+
+      db.ref("userdetails/" + key + "/photo").once("value")
+        .then(snap => {
+          if (snap.exists()) {
+            const photo = snap.val();
+            const img = document.getElementById("navProfilePic");
+            if (img && photo) img.src = photo;
+          }
+        });
+    });
+  });
+
+/* ===== YOUR EXISTING HISTORY LOGIC (UNCHANGED) ===== */
+const tbody=document.getElementById("historyBody");
+const buttons=document.querySelectorAll(".filter-btn");
+
+let historyData=JSON.parse(localStorage.getItem("historyLog"))||[];
+let lastDeviceState=localStorage.getItem("lastDeviceState")||"";
+let lastAccident=localStorage.getItem("lastAccident")||"";
+let currentFilter="all";
+
+/* RENDER */
+function render(){
+  tbody.innerHTML="";
+  historyData.filter(i=>currentFilter==="all"||i.event===currentFilter)
+  .forEach(i=>{
+    tbody.innerHTML+=`
+    <tr>
+      <td>${i.time}</td>
+      <td><a href="${i.location}" target="_blank">${i.location}</a></td>
+      <td>${i.speed}</td>
+      <td><span class="tag tag-${i.event}">${i.event}</span></td>
+      <td>${i.status}</td>
+    </tr>`;
+  });
+}
+
+/* FILTER */
+buttons.forEach(b=>{
+  b.onclick=()=>{
+    buttons.forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    currentFilter=b.dataset.filter;
+    render();
+  };
+});
+
+/* MAIN LOGIC */
+db.ref("Live").on("value",snap=>{
+  const d=snap.val(); if(!d) return;
+
+  const time=new Date().toLocaleString();
+
+  if(d.accident==="UNSAFE" && lastAccident!=="UNSAFE"){
+    addLog(time,d,"accident","Accident Detected");
+    lastAccident="UNSAFE";
+    localStorage.setItem("lastAccident","UNSAFE");
+  }
+
+  if(d.device!==lastDeviceState){
+    if(d.device==="ONLINE")
+      addLog(time,d,"online","Device Online");
+    if(d.device==="OFFLINE")
+      addLog(time,d,"offline","Device Offline");
+
+    lastDeviceState=d.device;
+    localStorage.setItem("lastDeviceState",d.device);
+  }
+
+  if(d.speed===0 && d.device==="ONLINE"){
+    if(historyData[0]?.event!=="stop")
+      addLog(time,d,"stop","Vehicle Stopped");
+  }
+
+  save();
+});
+
+function addLog(time,d,event,status){
+  historyData.unshift({
+    time,
+    location:(d.latitude && d.longitude)
+      ? `https://www.google.com/maps?q=${d.latitude},${d.longitude}`
+      : "Unknown",
+    speed:d.speed||0,
+    event,
+    status
+  });
+}
+
+function save(){
+  localStorage.setItem("historyLog",JSON.stringify(historyData));
+  render();
+}
+
+function clearHistory(){
+  if(confirm("Clear all history?")){
+    historyData=[];
+    localStorage.clear();
+    render();
+  }
+}
+
+render();
+</script>
+
+
+</body>
+</html>

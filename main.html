@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SOS Smart Accident Detection System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Navbar CSS -->
+  <link rel="stylesheet" href="navbar.css">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    body { background: #0b0f1a; color: #ffffff; line-height: 1.6; padding-top: 90px; }
+    a { text-decoration: none; color: inherit; }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 120px 8% 60px;
+      background: linear-gradient(135deg, #0b0f1a, #0f172a);
+    }
+
+    .hero-text { max-width: 600px; }
+    .hero-text h2 { font-size: 3rem; margin-bottom: 20px; line-height: 1.2; }
+    .hero-text span { color: #00e5ff; }
+    .hero-text p { color: #cbd5e1; margin-bottom: 30px; }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #00e5ff;
+      color: #000;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn:hover { background: #00bcd4; transform: translateY(-2px); }
+
+    .hero-card {
+      background: #020617;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 40px rgba(0,229,255,0.15);
+      max-width: 400px;
+    }
+    .hero-card h3 { margin-bottom: 15px; color: #00e5ff; }
+    .hero-card ul { list-style: none; }
+    .hero-card li { margin-bottom: 10px; color: #cbd5e1; }
+
+    section { padding: 80px 8%; }
+    .section-title { text-align: center; margin-bottom: 50px; }
+    .section-title h2 { font-size: 2.5rem; margin-bottom: 10px; }
+    .section-title p { color: #94a3b8; }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+    }
+    .feature-card {
+      background: #020617;
+      padding: 25px;
+      border-radius: 16px;
+      transition: 0.3s;
+      border: 1px solid #020617;
+    }
+    .feature-card:hover { border-color: #00e5ff; transform: translateY(-5px); }
+    .feature-card h3 { color: #00e5ff; margin-bottom: 10px; }
+    .feature-card p { color: #cbd5e1; font-size: 0.95rem; }
+
+    .steps { max-width: 900px; margin: auto; }
+    .step {
+      background: #020617;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      border-left: 4px solid #00e5ff;
+    }
+
+    .cta {
+      text-align: center;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      border-radius: 20px;
+      padding: 60px 20px;
+    }
+    .cta h2 { margin-bottom: 15px; font-size: 2.2rem; }
+    .cta p { color: #cbd5e1; margin-bottom: 25px; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #64748b;
+      border-top: 1px solid #020617;
+    }
+
+    @media(max-width: 900px) {
+      .hero { flex-direction: column; text-align: center; }
+      .hero-card { margin-top: 40px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div id="navbar"></div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <h2>Smart <span>Accident Detection</span> & Emergency Alert System</h2>
+      <p>
+        A next-generation IoT-based SOS system that automatically detects accidents,
+        tracks location, records video, and alerts family & emergency services.
+      </p>
+    </div>
+
+    <div class="hero-card">
+      <h3>Powered By</h3>
+      <ul>
+        <li>📞 SIM900A – Call & SMS Alert</li>
+        <li>📍 NEO-6M GPS – Speed & Location</li>
+        <li>🧠 MPU6050 – Accident Detection</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features">
+    <div class="section-title">
+      <h2>Key Features</h2>
+      <p>Everything needed to save lives in critical situations</p>
+    </div>
+    <div class="features">
+      <div class="feature-card">
+        <h3>🚨 Automatic Accident Detection</h3>
+        <p>Using MPU6050 sensor, the system detects sudden impact, tilt, and abnormal motion instantly.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📍 Live Location Tracking</h3>
+        <p>NEO-6M GPS sends accurate location and speed to emergency contacts and server.</p>
+      </div>
+      <div class="feature-card">
+        <h3>📞 Smart Call & SMS Alert</h3>
+        <p>SIM900A automatically sends SMS and calls emergency contacts without human interaction.</p>
+      </div>
+      <div class="feature-card">
+        <h3>☁️ Cloud & Dashboard Ready</h3>
+        <p>Integrated with Firebase backend for monitoring and history tracking.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how">
+    <div class="section-title">
+      <h2>How It Works</h2>
+      <p>Simple, fast, and fully automatic</p>
+    </div>
+    <div class="steps">
+      <div class="step">1️⃣ Accident occurs → MPU6050 detects abnormal motion & impact.</div>
+      <div class="step">2️⃣ GPS module fetches real-time location & speed.</div>
+      <div class="step">3️⃣ SIM900A sends SMS and makes calls to emergency contacts.</div>
+      <div class="step">4️⃣ Data is stored and viewed on the web dashboard.</div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="about">
+    <div class="cta">
+      <h2>Built to Save Lives</h2>
+      <p>
+        Designed for bikes, cars, and public transport to reduce response time and increase survival chances.
+      </p>
+      <a href="contact.html" class="btn">Contact Us</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <p>© 2026 SOS Guard | Smart Accident Detection System</p>
+    <p>Developed by Vishu</p>
+  </footer>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+  <!-- Firebase Init + Navbar Loader + Profile Photo -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyB_dQqxZ0K943Z9bOoUYa89hXDrdNI3B5I",
+      authDomain: "sos-iot-bf587.firebaseapp.com",
+      databaseURL: "https://sos-iot-bf587-default-rtdb.firebaseio.com",
+      projectId: "sos-iot-bf587",
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    // Load Navbar
+    fetch("navbar.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("navbar").innerHTML = html;
+
+        // After navbar is loaded, fetch profile photo
+        auth.onAuthStateChanged(user => {
+          if (!user) return;
+
+          const email = user.email;
+          const key = email.replace(/\./g, "_");
+
+          db.ref("userdetails/" + key + "/photo").once("value")
+            .then(snap => {
+              if (snap.exists()) {
+                const photo = snap.val();
+                const img = document.getElementById("navProfilePic");
+                if (img && photo) {
+                  img.src = photo;
+                }
+              }
+            });
+        });
+      })
+      .catch(err => console.error("Navbar load error:", err));
+  </script>
+
+  <script src="navbar.js"></script>
+
+</body>
+</html>

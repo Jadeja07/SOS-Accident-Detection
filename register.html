@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>SOS Guard | Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<!-- Firebase v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+
+body{
+  min-height:100vh;
+  background:linear-gradient(135deg,#020617,#0f172a);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+}
+
+.container{
+  background:#020617;
+  width:100%;
+  max-width:420px;
+  border-radius:20px;
+  box-shadow:0 0 40px rgba(0,229,255,0.15);
+  overflow:hidden;
+}
+
+.header{padding:25px;text-align:center}
+.header h2{color:#00e5ff}
+.header p{color:#94a3b8;font-size:0.9rem}
+
+.form-wrapper{padding:30px}
+
+.field{display:flex;flex-direction:column;margin-bottom:18px}
+.field label{font-size:0.85rem;color:#cbd5e1;margin-bottom:6px}
+
+.input-wrap{position:relative}
+.field input{
+  width:100%;
+  padding:10px 42px 10px 12px;
+  border-radius:8px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:#fff;
+  outline:none;
+}
+.field input:focus{border-color:#00e5ff}
+
+.toggle-pass{
+  position:absolute;
+  right:10px; top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  user-select:none;
+  font-size:0.9rem;
+  color:#94a3b8;
+}
+.toggle-pass:hover{color:#00e5ff}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border-radius:30px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+  background:#00e5ff;
+  color:#000;
+  transition:0.3s;
+  margin-top:10px;
+}
+.btn:hover{background:#00bcd4;transform:translateY(-2px)}
+.btn[disabled]{opacity:.6;cursor:not-allowed;transform:none}
+
+.login-link{
+  text-align:center;
+  margin-top:18px;
+  font-size:0.85rem;
+  color:#94a3b8;
+}
+.login-link a{color:#00e5ff;text-decoration:none;font-weight:600}
+
+#msg{margin-top:12px;font-size:0.85rem;text-align:center;min-height:1em}
+
+footer{
+  text-align:center;
+  padding:15px;
+  font-size:0.8rem;
+  color:#64748b;
+  border-top:1px solid #020617;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+    <h2>Create Account</h2>
+    <p>Register using email & password</p>
+  </div>
+
+  <div class="form-wrapper">
+    <div class="field">
+      <label>Email</label>
+      <div class="input-wrap">
+        <input type="email" id="email" placeholder="Enter email" autocomplete="email">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Enter password" autocomplete="new-password">
+        <span class="toggle-pass" id="togglePass">👁️</span>
+      </div>
+    </div>
+
+    <button class="btn" id="registerBtn" onclick="register()">Register</button>
+
+    <div id="msg"></div>
+
+    <div class="login-link">
+      Already have an account?
+      <a href="login.html">Login</a>
+    </div>
+  </div>
+
+  <footer>© 2026 SOS Guard</footer>
+</div>
+
+<script>
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyB_dQqxZ0K943Z9bOoUYa89hXDrdNI3B5I",
+  authDomain: "sos-iot-bf587.firebaseapp.com",
+  databaseURL: "https://sos-iot-bf587-default-rtdb.firebaseio.com",
+  projectId: "sos-iot-bf587"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const auth = firebase.auth();
+const db   = firebase.database();
+
+const emailEl = document.getElementById("email");
+const passEl  = document.getElementById("password");
+const msgEl   = document.getElementById("msg");
+const btnEl   = document.getElementById("registerBtn");
+const togglePass = document.getElementById("togglePass");
+
+/* 👁️ Toggle Password */
+togglePass.addEventListener("click", () => {
+  const isHidden = passEl.type === "password";
+  passEl.type = isHidden ? "text" : "password";
+  togglePass.textContent = isHidden ? "🙈" : "👁️";
+});
+
+/* ✅ Register */
+function register(){
+  const email = emailEl.value.trim();
+  const pass  = passEl.value;
+
+  msgEl.textContent = "";
+
+  if(!email || !pass){
+    msgEl.textContent = "❌ Please fill all fields";
+    return;
+  }
+  if(pass.length < 6){
+    msgEl.textContent = "❌ Password must be at least 6 characters";
+    return;
+  }
+
+  btnEl.disabled = true;
+  btnEl.textContent = "Creating account...";
+
+  auth.createUserWithEmailAndPassword(email, pass)
+    .then(res => {
+      const uid = res.user.uid;
+      return db.ref("users/" + uid).set({
+        email,
+        deviceAssigned: false,
+        deviceId: "",
+        createdAt: Date.now()
+      });
+    })
+    .then(()=>{
+      msgEl.textContent = "✅ Registered successfully. Please login.";
+      btnEl.textContent = "Registered";
+      setTimeout(() => {
+        btnEl.disabled = false;
+        btnEl.textContent = "Register";
+      }, 1500);
+    })
+    .catch(err=>{
+      msgEl.textContent = err.message || "❌ Registration failed";
+      btnEl.disabled = false;
+      btnEl.textContent = "Register";
+    });
+}
+</script>
+
+</body>
+</html>

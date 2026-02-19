@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+/* Navbar Wrapper */
+.sos-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background: rgba(2, 6, 23, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Container */
+.sos-nav .nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Brand / Profile */
+.sos-nav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #00e5ff;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Profile Image */
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #00e5ff;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  transition: 0.2s ease;
+}
+
+.profile-img:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.9);
+}
+
+/* Nav Links */
+.sos-nav .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.sos-nav .nav-item {
+  color: #e5e7eb;
+  font-weight: 500;
+  font-size: 15px;
+  position: relative;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.sos-nav .nav-item:hover {
+  color: #00e5ff;
+}
+
+.sos-nav .nav-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0%;
+  height: 2px;
+  background: #00e5ff;
+  transition: 0.2s ease;
+}
+
+.sos-nav .nav-item:hover::after {
+  width: 100%;
+}
+
+.sos-nav .nav-item.emergency {
+  color: #ff5c5c;
+  font-weight: 600;
+}
+
+/* Mobile Toggle */
+.sos-nav .menu-toggle {
+  display: none;
+  font-size: 26px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* Mobile Menu */
+@media (max-width: 900px) {
+  .sos-nav .nav-links {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    background: #020617;
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 16px;
+    display: none;
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.15);
+    min-width: 180px;
+  }
+
+  .sos-nav .nav-links.active {
+    display: flex;
+  }
+
+  .sos-nav .menu-toggle {
+    display: block;
+  }
+}
